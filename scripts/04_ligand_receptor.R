@@ -1,7 +1,4 @@
 # --- Load Libraries -----------------------------------------------------------
-LIB1='/cluster/tufts/hpc/tools/R/4.0.0'
-LIB2='/cluster/home/jlaird01/R/x86_64-pc-linux-gnu-library/4.0'
-.libPaths(c(LIB1,LIB2))
 library(tidymodels)
 library(broom.mixed)
 library(NanoStringNCTools)
@@ -21,7 +18,9 @@ library(MASS)
 load(paste0("./results/deg-enrichment.RData"))
 
 # --- Load CellChat Data -------------------------------------------------------
-load("/cluster/tufts/chinlab/jlaird01/nanostring/data/cellchat/CellChatDB.human.rda")
+# downloaded from:
+# https://github.com/sqjin/CellChat/blob/master/data/CellChatDB.human.rda
+load("./data/cellchat/CellChatDB.human.rda")
 
 
 # --- Ligand Receptor Modelling ------------------------------------------------
