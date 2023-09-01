@@ -1,7 +1,4 @@
 # --- Load Libraries -----------------------------------------------------------
-LIB1='/cluster/tufts/hpc/tools/R/4.0.0'
-LIB2='/cluster/home/jlaird01/R/x86_64-pc-linux-gnu-library/4.0'
-.libPaths(c(LIB1,LIB2))
 library(NanoStringNCTools)
 library(GeomxTools)
 library(GeoMxWorkflows)
@@ -30,9 +27,9 @@ pkc_seattle = "/cluster/tufts/chinlab/jlaird01/nanostring/data/seattle_raw_files
 
 # --- Grafton data -------------------------------------------------------------
 
-dcc_grafton = "/cluster/tufts/chinlab/jlaird01/nanostring/data/grafton_raw_files/DCC_Files"
-ann_grafton = "/cluster/tufts/chinlab/jlaird01/nanostring/data/grafton_raw_files/Annotation_grafton_rebecca.xlsx"
-pkc_grafton = "/cluster/tufts/chinlab/jlaird01/nanostring/data/grafton_raw_files/GeoMx_Hs_CTA_v1.0.pkc"
+dcc_grafton = ./data/grafton_raw_files/DCC_Files"
+ann_grafton = "./data/grafton_raw_files/Annotation_grafton_rebecca.xlsx"
+pkc_grafton = "./data/grafton_raw_files/GeoMx_Hs_CTA_v1.0.pkc"
 
 # --- combined_annotation ------------------------------------------------------
 
