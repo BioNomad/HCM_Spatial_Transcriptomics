@@ -1,7 +1,4 @@
 # --- Load Libraries -----------------------------------------------------------
-LIB1='/cluster/tufts/hpc/tools/R/4.0.0'
-LIB2='/cluster/home/jlaird01/R/x86_64-pc-linux-gnu-library/4.0'
-.libPaths(c(LIB1,LIB2))
 library(Seurat)
 library(SpatialDecon)
 library(NanoStringNCTools)
@@ -16,7 +13,7 @@ load(paste0("./results/ligand-receptor.RData"))
 
 # --- Prep for Deconvolution ---------------------------------------------------
 # load the seurat object
-matched_single_cell<-readRDS("/cluster/tufts/chinlab/single_nuclei_humans/Nanostring_Spatial_Seurat_Object/3_Preprocessing/6_CellAssignment/6_CellAssignment_1.rds")
+matched_single_cell<-readRDS("./data/6_CellAssignment_1.rds")
 
 matched_single_cell$patient <- gsub("-.*","",gsub(".*-h","",matched_single_cell$cells))
 
