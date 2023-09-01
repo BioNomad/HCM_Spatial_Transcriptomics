@@ -1,7 +1,4 @@
 # --- Load Libraries -----------------------------------------------------------
-LIB1='/cluster/tufts/hpc/tools/R/4.0.0'
-LIB2='/cluster/home/jlaird01/R/x86_64-pc-linux-gnu-library/4.0'
-.libPaths(c(LIB1,LIB2))
 library(NanoStringNCTools)
 library(GeomxTools)
 library(GeoMxWorkflows)
