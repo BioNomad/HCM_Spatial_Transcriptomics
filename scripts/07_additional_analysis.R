@@ -1,7 +1,4 @@
 # --- Load Libraries -----------------------------------------------------------
-LIB1='/cluster/tufts/hpc/tools/R/4.0.0'
-LIB2='/cluster/home/jlaird01/R/x86_64-pc-linux-gnu-library/4.0'
-.libPaths(c(LIB1,LIB2))
 library(Seurat)
 library(SpatialDecon)
 library(NanoStringNCTools)
@@ -352,43 +349,6 @@ avg_prop_plot = ggpubr::ggscatter(
                      space = "free_x",
                      labeller = label_wrap_gen(width = 10),
                      strip = ggh4x::strip_nested(bleed = TRUE))
-
-
-# ggpubr::ggscatter(
-#   data = per_patient_deconed_overlapping %>%
-#     mutate(Cell=factor(Cell,
-#                        levels=c(
-#                          "T Lymphocyte",
-#                          "Neuron",
-#                          "Pericyte",
-#                          "Lymphatic Endothelial",
-#                          "Fibroblast",
-#                          "Smooth Muscle",
-#                          "Macrophage",
-#                          "Endothelial",
-#                          "Dendritic cell",
-#                          "Cardiomyocyte"
-#                        ))) %>%
-#     group_by(composite,Cell) %>%
-#     summarise(avg_cell_prop=mean(value)*100) %>%
-#     filter(composite != "CONTROL: Mild"),
-#   x="composite",
-#   y="Cell",
-#   size="avg_cell_prop",
-#   color="composite",
-#   palette = colors[c(1,2,6,4,3,5)],
-#   xlab = "",
-#   ylab = "",
-#   title = ""
-# )+
-#   theme_pubr(legend = "right")+
-#   scale_size(range = c(0.1,6))+
-#   guides(color = FALSE)+
-#   labs(
-#     size="Average Cell Proportion (%)",
-#     #title="Average Cell Proportion By Phenotype/Disarray Level"
-#   )+
-#   RotatedAxis()
 
 # --- Diversity Statistic ------------------------------------------------------
 div_plot = ggpubr::ggscatter(
