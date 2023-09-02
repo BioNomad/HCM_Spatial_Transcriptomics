@@ -222,9 +222,8 @@ meta$per_patient_overlapping_diversity_statistic <- div_res_per_patient_overlapp
 # --- Plotting Cell Types Over Phenotype/Disarray Levels -----------------------
 # proceeding with Deconvolution Performed Using Averaged Per-Patient Single Cell Expression Data
 # Filtered By Overlapping Cell Type Markers
-# this deconvolution seems to best match the expected proportions of CM in the literature
 
-final_avg_cell_prop_plot = ggpubr::ggscatter(
+final_avg_cell_prop_plot =  ggpubr::ggscatter(
   data = per_patient_deconed_overlapping %>%
     mutate(Cell=factor(Cell,
                        levels=c(
@@ -238,8 +237,8 @@ final_avg_cell_prop_plot = ggpubr::ggscatter(
                          "Endothelial",
                          "Dendritic cell",
                          "Cardiomyocyte"
-                       ))) %>%
-    group_by(composite,Cell) %>%
+                       )))   %>%
+    group_by(composite,slide.name,Cell) %>%
     summarise(avg_cell_prop=mean(value)*100) %>%
     filter(composite != "CONTROL: Mild"),
   x="composite",
@@ -256,10 +255,14 @@ final_avg_cell_prop_plot = ggpubr::ggscatter(
   guides(color = FALSE)+
   labs(
     size="Average Cell Proportion (%)",
-    #title="Average Cell Proportion By Phenotype/Disarray Level"
   )+
-  RotatedAxis()
-final_avg_cell_prop_plot
+  rotate_x_text(angle = 55)+
+  ggh4x::facet_grid2(~composite+slide.name,
+                     drop=TRUE,
+                     scales='free_x',
+                     space = "free_x",
+                     labeller = label_wrap_gen(width = 10),
+                     strip = ggh4x::strip_nested(bleed = TRUE))
 
 # --- Final Deconvolution Bar Plot ---------------------------------------------
 final_decon_bar = ggpubr::ggbarplot(
@@ -290,36 +293,72 @@ scale_color_manual(values=colors,
                    name="Cell Types")
 
 final_decon_bar
-# --- Final Cell Diversity Plot ------------------------------------------------
-final_cell_div_plot <- ggpubr::ggviolin(
+# --- Diversity Statistic ------------------------------------------------------
+div_plot = ggpubr::ggscatter(
   data = meta %>%
     filter(composite != "CONTROL: Mild"),
   x="composite",
   y="per_patient_overlapping_diversity_statistic",
   color="composite",
-  fill="composite",
-  palette = colors[c(1,2,6,4,3,5)],
-  xlab = "",
-  ylab = "Cell Type Diversity Statistic",
+  palette = colors[c(1,2,6,4,3,5)]
 )+
   theme_pubr(legend = "right")+
-  RotatedAxis()+
-  theme(legend.position = "none")+
-  stat_compare_means(label = "p.signif", method = "wilcox.test", 
-                     ref.group = "CONTROL: Normal",label.y = -.1) 
-final_cell_div_plot
+  rotate_x_text(angle = 55)+
+  #stat_compare_means(label = "p.signif", method = "wilcox.test",label.y = -.2) +
+  ggh4x::facet_grid2(~composite+slide.name,
+                     drop=TRUE,
+                     scales='free_x',
+                     space = "free_x",
+                     strip = ggh4x::strip_nested(bleed = TRUE))+
+  labs(
+    x = "",
+    y = "Cell Type Diversity Statistic",
+    color = ""
+  )
+# --- Diversity Statisitc Mixed Model ------------------------------------------
 
-# using the wilcoxon ranked sum test to assess differences in cell type 
-# diversity when compared to normal ROI
-compare_means(
-  per_patient_overlapping_diversity_statistic ~ composite, 
-  data = meta,
-  ref.group = ".all.",
-  method = "t.test",
-  paired = TRUE,
-  p.adjust.method = "fdr")
+emmeans_res= emmeans::emmeans(nlme::lme(per_patient_overlapping_diversity_statistic ~ composite,random=~1|slide.name, meta),pairwise~composite) 
+emmeans_res_df = emmeans_res$contrasts %>% as.data.frame()
+emmeans_res_df
+
+# define our model
+model = nlme::lme(per_patient_overlapping_diversity_statistic ~ composite,random=~1|slide.name, meta)
 
 
+# model qc, code taken from
+# https://dfzljdn9uc3pi.cloudfront.net/2020/9522/1/MixedModelDiagnostics.html
+# Check if Residuals are normally distributed
+qqnorm(resid(model))
+qqline(resid(model))
+
+plot(model)
+
+#Calculate leverage
+lev<-hat(model.matrix(model,data = meta))
+
+#Plot leverage against standardized residuals
+plot(resid(model,type="pearson")~lev,
+     las=1,
+     ylab="Standardised residuals",
+     xlab="Leverage")
+
+#Inspect the random effect distribution
+ggdensity(data=nlme::ranef(model, condVar = TRUE),
+          x="(Intercept)",
+          fill = "midnightblue")+
+  labs(
+    title="random effect distribution"
+  )+
+  annotate(
+    "text",
+    x = .04, y=7, 
+    label =paste("Shapiro-Wilks normality test:",
+                 as.character(
+                   round(shapiro.test(
+                     as.numeric(
+                       unlist(
+                         nlme::ranef(model, condVar = TRUE)
+                         )))$p.value,digits = 5) )))
 # --- Save Data ----------------------------------------------------------------
 save.image(
   file = paste0("./results/deconvolution.RData")
