@@ -147,7 +147,7 @@ disarray_pheno_combined_enrichment_cd <- applyClusterEnrichment(
 disarray_pheno_combined_enrichment_cd_sig <- disarray_pheno_combined_enrichment_cd$enriched %>%
   mutate(Contrast=gsub("_",":",Contrast)) %>%
   mutate(Cluster=gsub("_",":",Cluster)) %>%
-  filter(qvalue<0.1)
+  filter(qvalue<0.05)
 
 # --- DotPlot of Enriched Terms ------------------------------------------------
 dotplot(
