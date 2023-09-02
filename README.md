@@ -1,5 +1,13 @@
 # Spatial Transcriptomic Analysis of Focal and Normal Areas of Myocyte Disarray in Human Hypertrophic Cardiomyopathy
 
+by Jason Laird 1, Gayani Perera 2, Rebecca Batorsky 3, Hongjie Wang 3, Knarik Arkun 4 and Michael T. Chin 2*
+1. Research Technology, Tufts University, Medford, MA 02144, USA
+2. Molecular Cardiology Research Institute, Tufts Medical Center, Boston, MA 02111, USA
+3. Data Intensive Studies Center, Tufts University, Medford, MA 02155, USA
+4. Department of Pathology, Tufts Medical Center, Boston, MA 02111, USA
+
+\* Author to whom correspondence should be addressed.
+
 Code used in the analysis of Hypertrophic Cardiomyopathy Spatial Transcriptomic Data (https://doi.org/10.3390/ijms241612625)
 
 ## Pipeline 
