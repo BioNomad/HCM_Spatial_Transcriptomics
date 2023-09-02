@@ -236,10 +236,73 @@ volcanoPlot(results = disarray_pheno_combined_results %>%
               mutate(Contrast=gsub("_",":",Contrast)) %>%
               filter(Contrast %in% c(
                 "CONTROL:Normal - HCM:Normal",
-                "HCM:Mild - HCM:Moderate",
-                "HCM:Moderate - HCM:Severe"
+                "HCM:Normal - HCM:Severe"
               )),
-            title = "Gene Expression Changes Between Phenotypes and HCM Disarray Levels")
+            title = "")+
+  theme_pubr(legend = "bottom")
+
+# --- DEG Scatter Plots by Patient ---------------------------------------------
+# prepare nanostring counts and meta data
+meta <- pData(target_combineData) 
+q3_counts <- assayDataElement(target_combineData,
+                              elt = "log_q")
+q3_counts <- q3_counts[,rownames(meta)]
+colnames(q3_counts) <- meta$id
+
+merged = meta %>%
+  inner_join(.,
+             q3_counts %>% 
+               t() %>%
+               as.data.frame() %>%
+               mutate(id=rownames(.)),
+             by="id")
+
+comparisons_of_interest = c(
+  "CONTROL: Normal - HCM: Normal",
+  "HCM: Normal - HCM: Severe"
+)
+top_deg_plots <- list()
+for(comparison in comparisons_of_interest) {
+  
+  colors = get_palette("npg",k=10)[1:length(unique(merged$slide.name))]
+  names(colors) = unique(merged$slide.name)
+  
+  top_deg = disarray_pheno_combined_results %>% 
+    mutate(Contrast = gsub("_",": ",Contrast)) %>%
+    filter(Contrast == comparison) %>%
+    arrange(FDR) %>% slice_head(n=1) %>%
+    dplyr::select(Gene) %>%
+    unlist()
+  
+  plot = ggscatter(
+    data=merged %>%
+      filter(grepl(
+        gsub(" - ","|",comparison),
+        composite
+      )),
+    x="id",
+    y=top_deg,
+    color="slide.name",
+    palette = get_palette("npg",k=10)
+  )+
+    facet_grid(.~composite,
+               scales = "free",
+               space = "free")+
+    theme_pubr(legend="right")+
+    theme(axis.text.x = element_blank(),
+          axis.ticks.x = element_blank())+
+    scale_color_manual(
+      values=colors
+    )+
+    labs(
+      x="ROI",
+      y=top_deg,
+      color="Patient"
+    )
+  top_deg_plots[[comparison]] = plot
+}
+do.call(wrap_plots,top_deg_plots)
+
 # --- Plot DEG Barplot ---------------------------------------------------------
 # define a function to plot DEGs per comparison group
 
